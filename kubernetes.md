@@ -1,14 +1,4 @@
-# Kubernetes commands
-
-## Delete all minikube
-```
-$ minikube delete
-```
-
-## Start minikube
-```
-$ minikube start --vm-drive=none
-```
+# Kubernetes
 
 ## List nodes
 ```
@@ -31,11 +21,6 @@ $ kubectl get pods [--watch]
 ## List all resources
 ```
 $ kubectl get all
-```
-
-## List services
-```
-$ minikube service list
 ```
 
 ## Delete a specificed resource
@@ -107,17 +92,212 @@ $ kubectl create -f monitoring-namespace.yaml
 ```
 
 
-2. Install prometheus:
-- Create value file ```prometheus.values```
+2. Install Prometheus:
+- Create value file ```prometheus-values.yaml```
 ```
 server:
   global:
     scrape_interval: 10s
 ```
-- Install prometheus using these values
+- Install Prometheus using these values
 ```
-$ helm install prometheus stable/prometheus --namespace monitoring --values prometheus.values
+$ helm install prometheus stable/prometheus --namespace monitoring --values prometheus-values.yaml
 ``` 
+
+3. Install Grafana
+- Create value file ```grafana-values.yaml```:
+```
+persistence:
+  enabled: true
+datasources:
+ datasources.yaml:
+   apiVersion: 1
+   datasources:
+   - name: Prometheus
+     type: prometheus
+     url: http://prometheus-server
+     access: proxy
+     isDefault: true
+
+dashboards:
+  default:
+    kong-dash:
+      gnetId: 7424
+      revision: 5
+      datasource: Prometheus
+
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+    - name: 'default'
+      orgId: 1
+      folder: ''
+      type: file
+      disableDeletion: false
+      editable: true
+      options:
+        path: /var/lib/grafana/dashboards/default
+```
+- Install Grafana using these values
+```
+$ helm install grafana stable/grafana --namespace monitoring --values grafana-values.yaml
+```
+
+4. Install Kong Ingress
+- Create ```kong-namespace.yaml```:
+```
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kong
+```
+
+- Create ```kong namespace```:
+```
+$ kubectl create -f kong-namespace.yaml
+```
+
+- Create values file ```kong-values.yaml```:
+```
+admin:
+  useTLS: false
+readinessProbe:
+  httpGet:
+    scheme: HTTP
+livenessProbe:
+  httpGet:
+    scheme: HTTP
+ingressController:
+  enabled: true
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8444"
+```
+
+- Install Kong Ingress:
+```
+$ helm install kong stable/kong --namespace kong --values kong-values.yaml
+```
+
+5. Add Prometheus plugin
+- Create file ```kong-prometheus-plugin.yaml```:
+```
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  labels:
+    global: "true"
+  name: prometheus
+plugin: prometheus
+```
+
+- Apply the plugin
+```
+$ kubectl apply -f kong-prometheus-plugin.yaml
+```
+
+6. Install some sample services
+```
+$ kubectl apply -f multiple-services.yaml
+```
+
+7. Configure routes for Kong
+- Create Kong Ingress
+  - Create file ```kong-ingress.yaml```:
+  ```
+  apiVersion: configuration.konghq.com/v1
+  kind: KongIngress
+  metadata:
+    name: strip-path
+  route:
+    strip_path: true
+  ```
+
+  - Apply Kong Ingress:
+  ```
+  $ kubectl apply -f kong-ingress.yaml
+  ``` 
+
+- Create Ingress (Route configuration):
+  - Create ```ingress.yaml```:
+  ```
+  apiVersion: extensions/v1beta1
+  kind: Ingress
+  metadata:
+    annotations:
+      configuration.konghq.com: strip-path
+    name: sample-ingresses
+  spec:
+    rules:
+    - http:
+      paths:
+      - path: /billing
+        backend:
+          serviceName: billing
+          servicePort: 80
+      - path: /comments
+        backend:
+          serviceName: comments
+          servicePort: 80
+      - path: /invoice
+        backend:
+          serviceName: invoice
+          servicePort: 80
+  ```
+  - Apply the ingress:
+  ```
+  $ kubectl apply -f ingress.yaml
+  ```
+8. Customize Grafana URL
+- Add root path to grafana deployment:
+```
+  env:
+    ...
+    - name: GF_SERVER_ROOT_URL
+              value: /grafana/
+```
+
+- Create ```monitoring-ingress.yaml```:
+```
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    configuration.konghq.com: strip-path
+  name: monitoring-ingresses
+  namespace: monitoring
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /grafana
+        backend:
+            serviceName: grafana
+            servicePort: 80
+```
+
+- Apply the ingress:
+```
+$ kubectl apply -f monitoring-ingress.yaml
+```
+
+# Minikube
+
+## Delete all minikube
+```
+$ minikube delete
+```
+
+## Start minikube
+```
+$ minikube start --vm-drive=none
+```
+
+## List services
+```
+$ minikube service list
+```
 
 # Helm
 

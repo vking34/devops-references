@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    configuration.konghq.com: strip-path
+  name: monitoring-ingresses
+  namespace: monitoring
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /grafana
+        backend:
+            serviceName: grafana
+            servicePort: 80
