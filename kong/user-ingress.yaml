@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"extensions/v1beta1","kind":"Ingress","metadata":{"annotations":{},"name":"user-ingress","namespace":"default"},"spec":{"rules":[{"http":{"paths":[{"backend":{"serviceName":"appservice","servicePort":31500},"path":"/appservice"}]}}]}}
+  creationTimestamp: "2019-12-09T15:08:52Z"
+  generation: 3
+  name: user-ingress
+  namespace: default
+  resourceVersion: "1757113"
+  selfLink: /apis/extensions/v1beta1/namespaces/default/ingresses/user-ingress
+  uid: 9c6fe9be-c7f6-4507-8e73-afa3126af177
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          serviceName: appservice
+          servicePort: 31500
+        path: /appservice
+status:
+  loadBalancer:
+    ingress:
+    - ip: 165.227.240.182

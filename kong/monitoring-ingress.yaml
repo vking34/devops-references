@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   annotations:
     configuration.konghq.com: strip-path
-  name: monitoring-ingresses
+  name: monitoring-ingress
   namespace: monitoring
 spec:
   rules:

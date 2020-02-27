@@ -33,6 +33,16 @@ $ kubectl delete [service|deployment]/<resource-name>
 $ kubectl delete --all deployments
 ```
 
+## Get deployment yaml
+```
+$ kubectl get deploy -n monitoring -o yaml --export
+```
+
+## Delete terminating pod
+```
+$ kubectl delete pod <pod-name> -n monitoring --grace-period 0 --force
+```
+
 ## Connect to the remote cluster
 1. Download the ```kubeconfig.yaml``` file containing access token to the remote cluster
 2. Copy some part in ```kubeconfig.yaml``` into ```~/.kube/config```:
@@ -104,7 +114,36 @@ server:
 $ helm install prometheus stable/prometheus --namespace monitoring --values prometheus-values.yaml
 ``` 
 
-3. Install Grafana
+3. Install Grafana with server root path ```/grafana```:
+- Fetch ```stable/grafana``` chart in local
+```
+$ kubectl fetch stable/grafana
+```
+
+- Extract ```grafana-5.0.3.tgz``` to ```grafana-5.0.3``` directory
+
+- Edit ```values.yaml``` in ```./grafana-5.0.3/grafana/``` directory
+```
+...
+
+grafana.ini:
+  server:                         # set server root url
+    path: /grafana/               # with prefix url: /grafana/
+    serve_from_sub_path: true     # 
+  paths:
+    data: /var/lib/grafana/data
+    logs: /var/log/grafana
+    plugins: /var/lib/grafana/plugins
+    provisioning: /etc/grafana/provisioning
+
+...
+```
+
+- Compress the modified chart, we got a new ```grafana-5.0.3.tgz```:
+```
+$ helm package ./grafana-5.0.3/grafana
+```
+
 - Create value file ```grafana-values.yaml```:
 ```
 persistence:
@@ -141,7 +180,7 @@ dashboardProviders:
 ```
 - Install Grafana using these values
 ```
-$ helm install grafana stable/grafana --namespace monitoring --values grafana-values.yaml
+$ helm install grafana grafana-5.0.3.tgz --namespace monitoring --values grafana-values.yaml
 ```
 
 4. Install Kong Ingress
@@ -197,7 +236,7 @@ plugin: prometheus
 $ kubectl apply -f kong-prometheus-plugin.yaml
 ```
 
-6. Install some sample services
+6. Install some sample services (for testing)
 ```
 $ kubectl apply -f multiple-services.yaml
 ```
@@ -219,7 +258,7 @@ $ kubectl apply -f multiple-services.yaml
   $ kubectl apply -f kong-ingress.yaml
   ``` 
 
-- Create Ingress (Route configuration):
+- Create Ingress to create service routes (for testing):
   - Create ```ingress.yaml```:
   ```
   apiVersion: extensions/v1beta1
@@ -249,14 +288,7 @@ $ kubectl apply -f multiple-services.yaml
   ```
   $ kubectl apply -f ingress.yaml
   ```
-8. Customize Grafana URL
-- Add root path to grafana deployment:
-```
-  env:
-    ...
-    - name: GF_SERVER_ROOT_URL
-              value: /grafana/
-```
+8. Create route to grafana server:
 
 - Create ```monitoring-ingress.yaml```:
 ```
@@ -265,7 +297,7 @@ kind: Ingress
 metadata:
   annotations:
     configuration.konghq.com: strip-path
-  name: monitoring-ingresses
+  name: monitoring-ingress
   namespace: monitoring
 spec:
   rules:
