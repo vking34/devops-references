@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: kong
+  name: kibana-ingress
+  namespace: kube-logging
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /kibana
+        backend:
+            serviceName: kibana
+            servicePort: 5601

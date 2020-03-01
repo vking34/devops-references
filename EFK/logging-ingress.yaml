@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+  name: logging-ingress
+  namespace: logging
+spec:
+  rules:
+  - host: kibana.datochain.com
+    http:
+      paths:
+      - path: /
+        backend:
+            serviceName: kibana-kibana
+            servicePort: 5601

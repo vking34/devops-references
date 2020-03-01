@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    configuration.konghq.com: strip-path
+  name: logging-ingress
+  namespace: logging
+spec:
+  rules:
+  - host: kibana.localhost
+    http:
+      paths:
+      - path: /
+        backend:
+            serviceName: kibana-kibana
+            servicePort: 5601
