@@ -2,7 +2,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   annotations:
-    configuration.konghq.com: strip-path
+    # configuration.konghq.com: strip-path
   name: sample-ingresses
 spec:
   rules:
@@ -20,7 +20,3 @@ spec:
         backend:
             serviceName: invoice
             servicePort: 80
-      - path: /grafana
-        backend:
-            serviceName: grafana
-            servicePort: 3000

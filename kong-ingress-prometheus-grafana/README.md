@@ -102,17 +102,10 @@ $ helm install grafana grafana-5.0.3.tgz --namespace monitoring --values grafana
 ```
 
 4. Install Kong Ingress
-- Create ```kong-namespace.yaml```:
-```
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: kong
-```
 
 - Create ```kong namespace```:
 ```
-$ kubectl create -f kong-namespace.yaml
+$ kubectl create ns kong
 ```
 
 - Create values file ```kong-values.yaml```:
@@ -154,7 +147,7 @@ plugin: prometheus
 $ kubectl apply -f kong-prometheus-plugin.yaml
 ```
 
-6. Install some sample services (for testing)
+6. Install some sample services __(for testing)__
 ```
 $ kubectl apply -f multiple-services.yaml
 ```
@@ -176,7 +169,7 @@ $ kubectl apply -f multiple-services.yaml
   $ kubectl apply -f kong-ingress.yaml
   ``` 
 
-- Create Ingress to create service routes (for testing):
+- Create Ingress to create service routes ___(for testing)__:
   - Create ```ingress.yaml```:
   ```
   apiVersion: extensions/v1beta1
@@ -236,5 +229,5 @@ $ kubectl apply -f monitoring-ingress.yaml
 - Forwar port:
 ```
 POD_NAME=$(kubectl get pods --namespace kong -o jsonpath="{.items[0].metadata.name}")
-kubectl --namespace kong port-forward $POD_NAME 8000 &
+kubectl --namespace kong port-forward $POD_NAME 8000
 ```
