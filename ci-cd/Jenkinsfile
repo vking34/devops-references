@@ -6,7 +6,7 @@ node('jenkins-slave') {
         git clone https://github.com/vking34/devops-references.git
         cd ./devops-references/ci-cd/sample-app/
         
-        docker build . -t sample-app:1.4
+        docker build . -t sample-app:1.5
         echo "done!"
         """)
     }
