@@ -30,6 +30,8 @@
 
 node('jenkins-slave') {
 
+    def tag = env.GIT_COMMIT
+
     stage('Fetch'){
         sh (script: """
         echo "Fetching..."
@@ -38,9 +40,6 @@ node('jenkins-slave') {
 
         """)
     }
-
-    // tag = commit id
-    tag = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
 
     stage('Build') {
         sh (script: """
@@ -56,6 +55,6 @@ node('jenkins-slave') {
     }
 
     stage('Delivery'){
-        
+
     }
 }
