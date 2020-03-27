@@ -92,3 +92,10 @@ $ kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | c
 ```
 $ kubectl -n argocd apply -f app.yaml
 ```
+#
+
+## Setup CI
+
+### Pre-requistes:
++ Github Integration Plugin
++ 
