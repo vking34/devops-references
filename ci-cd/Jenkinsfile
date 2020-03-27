@@ -1,15 +1,14 @@
 node('jenkins-slave') {
 
     stage('Build') {
-        steps {
-            sh "echo ${GIT_COMMIT}"
-            sh (script: """
-            git clone https://github.com/vking34/devops-references.git
-            cd ./devops-references/ci-cd/sample-app/
-            
-            docker build . -t sample-app:1.8
-            """)
-        }
+        sh (script: """
+        echo ${GIT_COMMIT}
+        git clone https://github.com/vking34/devops-references.git
+        cd ./devops-references/ci-cd/sample-app/
+        
+        docker build . -t sample-app:1.8
+        """)
+        
     }
     
      stage('Test') {
