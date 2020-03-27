@@ -1,45 +1,51 @@
-pipeline {
-    agent { label 'jenkins-slave'}
-    stages {
-        stage('Build') {
-            steps {
-                sh (script: """
-                    echo "Building..."
-                    """)
-            }
-        }
+// pipeline {
+//     agent { label 'jenkins-slave'}
+//     stages {
+        
 
-        stage('Test') {
-            steps {
-                sh(script: """
-                echo "Done!"
-                """)
-            }
-        }
-    }
-}
+//         stage('Build') {
+//             steps {
+//                 sh (script: """
+//                     echo "Building..."
+//                     """)
+//             }
+//         }
 
-
-// node('jenkins-slave') {
-
-//     stage('Build') {
-//         sh (script: """
-//         echo "Fetching..."
-//         git clone https://github.com/vking34/devops-references.git
-//         cd ./devops-references/ci-cd/sample-app/
-
-//         echo "Building..."
-//         docker build . -t vking34/sample-app:${tag}
-//         """)
-//     }
-    
-//     stage('Test') {
-//         sh(script: """
-//         echo "Done!"
-//         """)
-//     }
-
-//     stage('Delivery'){
-
+//         stage('Test') {
+//             steps {
+//                 sh(script: """
+//                 echo "Done!"
+//                 """)
+//             }
+//         }
 //     }
 // }
+
+
+node('jenkins-slave') {
+
+    checkout scm
+    tag = env.GIT_COMMIT
+
+
+    stage('Build') {
+        sh (script: """
+        echo "Fetching..."
+        git clone https://github.com/vking34/devops-references.git
+        cd ./devops-references/ci-cd/sample-app/
+
+        echo "Building..."
+        docker build . -t vking34/sample-app:${tag}
+        """)
+    }
+    
+    stage('Test') {
+        sh(script: """
+        echo "Done!"
+        """)
+    }
+
+    stage('Delivery'){
+
+    }
+}
