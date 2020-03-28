@@ -3,9 +3,11 @@ kind: Service
 metadata:
   name: sample-service
 spec:
-  selector:
-    app: sample-app
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
+    type: NodePort
+    selector:
+        app: sample-app
+    ports:
+        - name: http
+          port: 80
+          targetPort: 80
+          protocol: tcp
