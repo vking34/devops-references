@@ -5,7 +5,6 @@ node('jenkins-slave') {
     env.DOCKER_API_VERSION="1.23"
     
     sh "git rev-parse --short HEAD > commit-id"
-    sh "pwd"
     sh "ls -la"
 
     tag = readFile('commit-id').replace("\n", "").replace("\r", "")
