@@ -16,7 +16,7 @@ node('jenkins-slave') {
         docker build . -t vking34/sample-app:${tag}
         """)
 
-        docker.withRegistry("", "registryCredential"){
+        docker.withRegistry("", "dockerhub"){
             sh "docker push vking34/sample-app:${tag}"
         }
     }
