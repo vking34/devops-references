@@ -13,7 +13,7 @@ node('jenkins-slave') {
     stage('Build') {
         sh (script: """
         echo "Fetching..."
-        cd ./devops-references/ci-cd/sample-app/
+        cd ./ci-cd/sample-app/
 
         echo "Building..."
         docker build . -t vking34/sample-app:${tag}
