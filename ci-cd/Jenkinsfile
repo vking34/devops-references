@@ -15,7 +15,7 @@ node('jenkins-slave') {
         cd ./devops-references/ci-cd/sample-app/
 
         echo "Building..."
-        docker build . -t vking34/sample-app:2.4
+        docker build . -t vking34/sample-app:2.5
         """)
     }
     
