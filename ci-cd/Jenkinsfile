@@ -1,9 +1,10 @@
 node('jenkins-slave') {
 
-    checkout scm
+    git_info = checkout scm
 
-    env.DOCKER_API_VERSION="1.23"
-    
+    sh "echo ${git_info.GIT_COMMIT}"
+
+
     sh "git rev-parse --short HEAD > commit-id"
     sh "ls -la"
 
