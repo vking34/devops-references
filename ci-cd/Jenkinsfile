@@ -1,5 +1,13 @@
 node('jenkins-slave') {
 
+    checkout scm
+
+    env.DOCKER_API_VERSION="1.23"
+    
+    sh "git rev-parse --short HEAD > commit-id"
+
+    tag = readFile('commit-id').replace("\n", "").replace("\r", "")
+
     stage('Build') {
         sh (script: """
         echo "Fetching..."
@@ -7,7 +15,7 @@ node('jenkins-slave') {
         cd ./devops-references/ci-cd/sample-app/
 
         echo "Building..."
-        docker build . -t vking34/sample-app:2.3
+        docker build . -t vking34/sample-app:${tag}
         """)
     }
     
