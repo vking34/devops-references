@@ -1,12 +1,12 @@
 node('jenkins-slave') {
 
-    checkout scm
+    // checkout scm
 
-    env.DOCKER_API_VERSION="1.23"
+    // env.DOCKER_API_VERSION="1.23"
     
-    sh "git rev-parse --short HEAD > commit-id"
+    // sh "git rev-parse --short HEAD > commit-id"
 
-    tag = readFile('commit-id').replace("\n", "").replace("\r", "")
+    // tag = readFile('commit-id').replace("\n", "").replace("\r", "")
 
     stage('Build') {
         sh (script: """
