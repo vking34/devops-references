@@ -2,12 +2,9 @@ node('jenkins-slave') {
 
     git_info = checkout scm
 
-    sh "echo ${git_info.GIT_COMMIT}"
-
+    // sh "echo ${git_info.GIT_COMMIT}"
 
     sh "git rev-parse --short HEAD > commit-id"
-    sh "ls -la"
-
     tag = readFile('commit-id').replace("\n", "").replace("\r", "")
 
     stage('Build') {
@@ -18,6 +15,10 @@ node('jenkins-slave') {
         echo "Building..."
         docker build . -t vking34/sample-app:${tag}
         """)
+
+        docker.withRegistry("", "registryCredential"){
+            sh "docker push vking34/sample-app:${tag}"
+        }
     }
     
     stage('Test') {
