@@ -30,6 +30,7 @@ node('jenkins-slave') {
     stage('Delivery'){
         sh(script: """
         cd ../
+        ls -la
         git clone https://github.com/vking34/sample-app-deployments.git
         cd ./sample-app-deployments
         pwd
@@ -37,11 +38,14 @@ node('jenkins-slave') {
         git config --global user.email "lzzvkingzzl@gmail.com"
         sed -i -z -E "s/sample-app:[^\\n]+\\n/sample-app:${tag}\\n/g" staging/deployments/deployment.yaml
         git add .
-        git commit -m \"Delivery to staging env with commit ${tag}\"
+        git commit -m \"fix(staging): Delivery to staging env with commit ${tag}\"
         """)
 
         withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-            sh('git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/vking34/sample-app-deployments.git HEAD:master')
+            sh(script: """
+            ls -la
+            git push -f https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/vking34/sample-app-deployments.git HEAD:master
+            """)
         }
     }
 }
