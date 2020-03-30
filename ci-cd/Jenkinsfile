@@ -29,6 +29,7 @@ node('jenkins-slave') {
 
     stage('Delivery'){
         sh(script: """
+        cd ../
         git clone https://github.com/vking34/sample-app-deployments.git
         cd ./sample-app-deployments
         pwd
