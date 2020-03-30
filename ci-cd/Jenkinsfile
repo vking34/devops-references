@@ -28,7 +28,17 @@ node('jenkins-slave') {
     }
 
     stage('Delivery'){
+        sh(script: """
+        git clone https://github.com/vking34/sample-app-deployments.git
+        cd ./sample-app-deployments
+        sed -i -z -E "s/sample-app:[^\n]+\n/sample-app:944805b\n/g" staging/deployments/deployment.yaml
+        git add .
+        git commit -n "Delivery to staging env with commit ${tag}"
+        """)
 
+        withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+            sh('git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/vking34/sample-app-deployments.git')
+        }
     }
 }
 
