@@ -36,6 +36,8 @@ node('jenkins-slave') {
         sed -i -z -E "s/sample-app:[^\\n]+\\n/sample-app:944805b\\n/g" staging/deployments/deployment.yaml
         git add .
         git commit -m \"Delivery to staging env with commit ${tag}\"
+        git config --global user.name "vking34"
+        git config --global user.email "lzzvkingzzl@gmail.com"
         """)
 
         withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
