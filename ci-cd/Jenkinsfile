@@ -27,79 +27,36 @@ node('jenkins-slave') {
         """)
     }
 
-    stage('Delivery'){
+    stage('Delivery to Staging'){
         withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
             sh(script: """
             cd ../
-            ls -la
             git clone https://github.com/vking34/sample-app-deployments.git
             cd ./sample-app-deployments
-            pwd
             git config --global user.name "vking34"
             git config --global user.email "lzzvkingzzl@gmail.com"
             sed -i -z -E "s/sample-app:[^\\n]+\\n/sample-app:${tag}\\n/g" staging/deployments/deployment.yaml
             git add .
             git commit -m \"fix(staging): Delivery to staging env with commit ${tag}\"
+            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/vking34/sample-app-deployments.git
+            """)
+        }
+    }
+
+    stage('Deploy to Prod'){
+
+        withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+            sh(script: """
+            cd ../sample-app-deployments
+            pwd
             ls -la
+            git config --global user.name "vking34"
+            git config --global user.email "lzzvkingzzl@gmail.com"
+            sed -i -z -E "s/sample-app:[^\\n]+\\n/sample-app:${tag}\\n/g" prod/deployments/deployment.yaml
+            git add .
+            git commit -m \"fix(staging): Delivery to staging env with commit ${tag}\"
             git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/vking34/sample-app-deployments.git
             """)
         }
     }
 }
-
-// pipeline {
-//     agent { label 'jenkins-slave'}
-//     stages {
-        
-
-//         stage('Build') {
-//             steps {
-//                 sh (script: """
-//                     echo "Building..."
-//                     """)
-//             }
-//         }
-
-//         stage('Test') {
-//             steps {
-//                 sh(script: """
-//                 echo "Done!"
-//                 """)
-//             }
-//         }
-//     }
-// }
-
-
-// node('jenkins-slave') {
-
-//     checkout scm
-
-//     env.DOCKER_API_VERSION="1.23"
-    
-//     sh "git rev-parse --short HEAD > commit-id"
-
-//     tag = readFile('commit-id').replace("\n", "").replace("\r", "")
-
-
-//     stage('Build') {
-//         sh (script: """
-//         echo "Fetching..."
-//         git clone https://github.com/vking34/devops-references.git
-//         cd ./devops-references/ci-cd/sample-app/
-
-//         echo "Building..."
-//         docker build . -t vking34/sample-app:${tag}
-//         """)
-//     }
-    
-//     stage('Test') {
-//         sh(script: """
-//         echo "Done!"
-//         """)
-//     }
-
-//     stage('Delivery'){
-
-//     }
-// }
