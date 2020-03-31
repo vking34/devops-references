@@ -44,7 +44,7 @@ node('jenkins-slave') {
     }
 
     stage('Deploy to Prod'){
-
+        input message:'Approve deployment?'
         withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
             sh(script: """
             cd ../sample-app-deployments
@@ -54,7 +54,7 @@ node('jenkins-slave') {
             git config --global user.email "lzzvkingzzl@gmail.com"
             sed -i -z -E "s/sample-app:[^\\n]+\\n/sample-app:${tag}\\n/g" prod/deployments/deployment.yaml
             git add .
-            git commit -m \"fix(staging): Delivery to staging env with commit ${tag}\"
+            git commit -m \"fix(prod): Delivery to staging env with commit ${tag}\"
             git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/vking34/sample-app-deployments.git
             """)
         }
