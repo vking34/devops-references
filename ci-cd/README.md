@@ -89,8 +89,21 @@ $ kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | c
     - Definition: Pipeline script from SCM
     - SCM: Git
     - Repositories: Git URL (https://github.com/vking34/devops-references.git)
-    - Branches: master (default)
-    - Script Path: Jenkinsfile (default)
+    - Branches: master *(default)*
+    - Script Path: Jenkinsfile *(default)*
+
+
+### Enable mail notification *(optional)*
+1. Manage Jenkins > Configure System > Email Configuration > Advanced
+2. Configure:
+    - SMTP Server: smtp.gmail.com (or other mail server providers)
+    - Use SMTP Authentication: Check
+    - Enter username & password. Note that, for google account, in your account management:
+        - Enable Allow Less Secure App Access (https://www.google.com/settings/security/lesssecureapps)
+        - Unlock captcha (https://accounts.google.com/DisplayUnlockCaptcha)
+    - Use SSL: Check
+    - Port: 465
+    - Test the configuration by send test email
 
 #
 ## Setup CD
