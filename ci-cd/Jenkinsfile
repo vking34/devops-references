@@ -8,26 +8,32 @@ node('jenkins-slave') {
     tag = readFile('commit-id').replace("\n", "").replace("\r", "")
 
     stage('Build') {
+        // Build docker image
         sh (script: """
-        echo \"Fetching...\"
         cd ./ci-cd/sample-app/
-
-        echo "Building..."
         docker build . -t vking34/sample-app:${tag}
         """)
 
         docker.withRegistry("", "dockerhub"){
             sh "docker push vking34/sample-app:${tag}"
         }
+
+        // Mail
+        mail bcc: '', body: 'Success!', cc: '', from: '', replyTo: '', subject: '[sample-app](Build)', to: 'lzzvkingzzl@gmail.com'
     }
     
     stage('Test') {
+        // Test here
         sh(script: """
         echo "Done!"
         """)
+
+        // Mail
+        mail bcc: '', body: 'Success!', cc: '', from: '', replyTo: '', subject: '[sample-app](Test)', to: 'lzzvkingzzl@gmail.com'
     }
 
     stage('Delivery to Staging'){
+        // Clone and edit image:tag in staging directory then push
         withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
             sh(script: """
             cd ../
@@ -41,9 +47,13 @@ node('jenkins-slave') {
             git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/vking34/sample-app-deployments.git
             """)
         }
+
+        // Mail
+        mail bcc: '', body: 'Success!', cc: '', from: '', replyTo: '', subject: '[sample-app](Delivery)', to: 'lzzvkingzzl@gmail.com'
     }
 
     stage('Deploy to Prod'){
+        // Ask for approvement then edit image:tag in prod directory then push
         input message:'Approve deployment?'
         withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
             sh(script: """
@@ -58,5 +68,8 @@ node('jenkins-slave') {
             git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/vking34/sample-app-deployments.git
             """)
         }
+
+        // Mail
+        mail bcc: '', body: 'Success!', cc: '', from: '', replyTo: '', subject: '[sample-app](Deploy)', to: 'lzzvkingzzl@gmail.com'
     }
 }
