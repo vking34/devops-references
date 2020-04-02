@@ -46,6 +46,7 @@ c. Flow
 5. Sau khi pass hết các test, đến stage ```Delivery```. Trước hết, jenkins slave sẽ build và push image lên registry để lưu trữ.
 
 6. Jenkins slave sẽ clone ```deployment-repository``` về rồi sửa file cấu hình rồi lại push lên repo. Cụ thể, ta sửa tag của image trong file ```deployment.yaml```. Ví dụ: image của version hiện tại là ```sample-app:da6a18b```, sau khi build ta được và sửa thành ```sample-app:398b88d```.
+    - Việc tác biệt giữa ```app-repository``` và ```deployment-repository``` nhằm phân tách rõ ràng giữa phần dev và phần ops. Do đó cũng dễ quản lý hơn, an toàn hơn. Ví dụ, một ông dev mới join vào team chỉ có thể code trên ```app-repository``` mà không thể  sửa đổi phần ops.
 
 7. Github gửi thông báo cho ArgoCD server về sự thay đổi của ```deployment-repository``` để ArgoCD pull về.
     - GitOps? Với các nền tảng hiện đại ngày nay đều hỗ trợ ta khai báo, quản lý cơ sở hạ tầng bằng code (Infrastructure as Code) như Docker, Kubernetes, AWS,... hay các tools quản lý cấu hình như Ansible, Terraform... Ta hiểu nôm na, GitOps là vận hành hệ thống bằng cách sử dụng Git. Ví dụ, ta upgrade version mới cho app, ta chỉ cần thay đổi code trong ```deployment-repository```, hệ thống sẽ lắng nghe sự thay đổi và tự động cập nhập theo cấu hình được định nghĩa trong repo. Hay ta muốn rollback lại version cũ, ta có thể reverse lại commit tương ứng với version ta mong muốn, khi đó hệ thống lại lắng nghe đổi và rollback lại version cũ.
