@@ -47,7 +47,7 @@ node('jenkins-slave') {
             git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/vking34/sample-app-deployments.git
             """)
         }
-
+        
         // Mail
         mail bcc: '', body: 'Success!', cc: '', from: '', replyTo: '', subject: '[sample-app](Delivery)', to: 'lzzvkingzzl@gmail.com'
     }

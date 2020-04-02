@@ -21,7 +21,9 @@ b. Implementation:
 - Deploy Argo
     - https://188.166.206.112/
     - username: admin
-    - password: 
+    - password: argocd-server-6bd6454945-7hw4r
+    - Note: If your browser prevent from accessing the Argo Server with error: __ERR_CERT_INVALID__ then try to type ```thisisunsafe``` on this tab
+    
 - Chuẩn bị 1 repository chứa source code của app. Demo: ```ci-cd/sample-app```
 - Chuẩn bị 1 repository chứa những file cấu hình, deployment, ... của app trong những môi trường khác nhau. Demo: https://github.com/vking34/sample-app-deployments
 - Xem chi tiết trong file ```ci-cd/README.md```
