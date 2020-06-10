@@ -10,14 +10,27 @@ $ kubectl create ns jenkins
 $ kubectl -n jenkins apply -f ./jenkins/
 ```
 
-3. Apply ```jenkins-ingress.yaml```:
-```
-$ kubectl -n jenkins apply -f jenkins-ingress.yaml
-```
+3. *(optional)* Create route to access jenkins, using 1 of the 2 following methods:
+    - Apply ```jenkins-ingress.yaml``` :
+    ```
+    $ kubectl -n jenkins apply -f jenkins-ingress.yaml
+    ```
+    - Turn service type into ```LoadBalancer```:
+
 
 4. Get init root password
+    - Get logs of pods:
+    ```
+    $ kubectl -n jenkins logs <jenkins-pod>
+    ```
+    - Cat file content:
+    ```
+    $ kubectl exec -it `kubectl get pods --selector=app=jenkins --output=jsonpath={.items..metadata.name}` cat /var/jenkins_home/secrets/initialAdminPassword
+    ```
+
+5. Fix broken reverse proxy
 ```
-$ kubectl exec -it `kubectl get pods --selector=app=jenkins --output=jsonpath={.items..metadata.name}` cat /var/jenkins_home/secrets/initialAdminPassword
+Manage Jenkins > Configure Global Security > CSRF protection > Check Enable proxy compatibility
 ```
 
 #

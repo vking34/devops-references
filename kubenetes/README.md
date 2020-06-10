@@ -18,6 +18,11 @@ $ kubectl get pods [--watch]
 --watch: to update info of status
 
 
+## Tail logs of pod
+```
+$ kubectl logs --follow <pod-name>
+```
+
 ## List all resources
 ```
 $ kubectl get all

@@ -1,13 +1,18 @@
 ## build docker image
 ```
-# docker build -t [dockerhub-username]/<image name>:[tag] .
+$ docker build -t [dockerhub-username]/<image name>:[tag] .
 ```
 
 the dot means that building image from Dockerfile in the current local directory
 
 ## run docker container from an image
 ```
-# docker run <image name> -p <localhost port>:<container port>
+$ docker run -p <localhost port>:<container port> <image name> 
+```
+
+## SSH into a running container
+```
+$ docker exec -it <container-name> /bin/bash
 ```
 
 ## Issue: Get net/http: request canceled while waiting for connection
