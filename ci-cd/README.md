@@ -11,14 +11,14 @@ $ kubectl -n jenkins apply -f ./jenkins/
 ```
 
 3. *(optional)* Create route to access jenkins, using 1 of the 2 following methods:
-    - Apply ```jenkins-ingress.yaml``` :
+    - Access Jenkins Server via sub-domain. Edit the domain in ```jenkins-ingress.yaml``` then apply it:
     ```
     $ kubectl -n jenkins apply -f jenkins-ingress.yaml
     ```
-    - Turn service type into ```LoadBalancer```:
+    - Turn Jenkins Service type into ```LoadBalancer```:
 
 
-4. Get init root password
+4. Get init admin password
     - Get logs of pods:
     ```
     $ kubectl -n jenkins logs <jenkins-pod>
@@ -28,14 +28,16 @@ $ kubectl -n jenkins apply -f ./jenkins/
     $ kubectl exec -it `kubectl get pods --selector=app=jenkins --output=jsonpath={.items..metadata.name}` cat /var/jenkins_home/secrets/initialAdminPassword
     ```
 
-5. Fix broken reverse proxy
+5. Login Jenkins Server with the init admin password, then install suggested plugins. Create the first admin user.
+
+6. After login, Fix broken reverse proxy.
 ```
 Manage Jenkins > Configure Global Security > CSRF protection > Check Enable proxy compatibility
 ```
 
 #
 
-## Install ArgoCD
+## Deploy ArgoCD onto Kubernetes
 1. Create ```argocd``` namespace
 ```
 $ kubectl create ns argocd
@@ -50,12 +52,12 @@ $ kubectl -n argocd apply -f argocd-installation.yaml
 
 4. (Optional) If your browser prevent from accessing the Argo Server with error: __ERR_CERT_INVALID__ then try to type ```thisisunsafe``` on this tab
 
-4. Get init admin password
+5. Get init admin password
 ```
 $ kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut -d'/' -f 2
 ``` 
 
-4. Login with username: ```admin``` and password: {above password}
+6. Login with username: ```admin``` and password: {above password}
 
 #
 
